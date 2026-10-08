@@ -1,0 +1,42 @@
+{
+  "xsappname": "warehouse-inventory-stock-tracking",
+  "tenant-mode": "dedicated",
+  "scopes": [
+    {
+      "name": "$XSAPPNAME.Clerk",
+      "description": "Warehouse Clerk"
+    },
+    {
+      "name": "$XSAPPNAME.Supervisor",
+      "description": "Warehouse Supervisor"
+    },
+    {
+      "name": "$XSAPPNAME.Manager",
+      "description": "Plant Manager"
+    }
+  ],
+  "attributes": [],
+  "role-templates": [
+    {
+      "name": "WarehouseClerk",
+      "description": "Warehouse Clerk",
+      "scope-references": [
+        "$XSAPPNAME.Clerk"
+      ]
+    },
+    {
+      "name": "WarehouseSupervisor",
+      "description": "Warehouse Supervisor",
+      "scope-references": [
+        "$XSAPPNAME.Supervisor"
+      ]
+    },
+    {
+      "name": "PlantManager",
+      "description": "Plant Manager",
+      "scope-references": [
+        "$XSAPPNAME.Manager"
+      ]
+    }
+  ]
+}

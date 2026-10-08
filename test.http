@@ -1,0 +1,206 @@
+@baseUrl = http://localhost:4004/inventory
+@materialId = 10000001-0000-0000-0000-000000000001
+@sl01 = aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa
+@sl02 = bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb
+@sl03 = cccccccc-cccc-cccc-cccc-cccccccccccc
+@sl06 = ffffffff-ffff-ffff-ffff-ffffffffffff
+@invalidId = 99999999-9999-9999-9999-999999999999
+
+
+### GET 1 - Plants
+
+GET {{baseUrl}}/Plants
+
+
+### GET 2 - Storage Locations
+
+GET {{baseUrl}}/StorageLocations
+
+
+### GET 3 - Materials
+
+GET {{baseUrl}}/Materials
+
+
+### GET 4 - Stock Movements
+
+GET {{baseUrl}}/StockMovements
+
+
+### GET 5 - MAT001 Movements
+
+GET {{baseUrl}}/StockMovements?$filter=material_ID%20eq%20%27{{materialId}}%27
+
+
+### POST 6 - Valid Receipt
+
+POST {{baseUrl}}/receive
+Content-Type: application/json
+
+{
+  "materialId": "{{materialId}}",
+  "storageLocationId": "{{sl01}}",
+  "quantity": 10,
+  "movementDate": "2026-10-08T12:30:00Z",
+  "reference": "TEST-GRN-001"
+}
+
+
+### POST 7 - Receipt Zero Quantity
+
+POST {{baseUrl}}/receive
+Content-Type: application/json
+
+{
+  "materialId": "{{materialId}}",
+  "storageLocationId": "{{sl01}}",
+  "quantity": 0,
+  "movementDate": "2026-10-08T12:31:00Z",
+  "reference": "TEST-GRN-ZERO"
+}
+
+
+### POST 8 - Receipt Invalid Material
+
+POST {{baseUrl}}/receive
+Content-Type: application/json
+
+{
+  "materialId": "{{invalidId}}",
+  "storageLocationId": "{{sl01}}",
+  "quantity": 10,
+  "movementDate": "2026-10-08T12:32:00Z",
+  "reference": "TEST-GRN-BAD"
+}
+
+
+### POST 9 - Valid Issue
+
+POST {{baseUrl}}/issue
+Content-Type: application/json
+
+{
+  "materialId": "{{materialId}}",
+  "storageLocationId": "{{sl01}}",
+  "quantity": 5,
+  "movementDate": "2026-10-08T12:35:00Z",
+  "reference": "TEST-ISS-001"
+}
+
+
+### POST 10 - Oversized Issue
+
+POST {{baseUrl}}/issue
+Content-Type: application/json
+
+{
+  "materialId": "{{materialId}}",
+  "storageLocationId": "{{sl01}}",
+  "quantity": 99999,
+  "movementDate": "2026-10-08T12:36:00Z",
+  "reference": "TEST-ISS-OVER"
+}
+
+
+### POST 11 - Issue Zero Quantity
+
+POST {{baseUrl}}/issue
+Content-Type: application/json
+
+{
+  "materialId": "{{materialId}}",
+  "storageLocationId": "{{sl01}}",
+  "quantity": 0,
+  "movementDate": "2026-10-08T12:37:00Z",
+  "reference": "TEST-ISS-ZERO"
+}
+
+
+### POST 12 - Valid Transfer
+
+POST {{baseUrl}}/transfer
+Content-Type: application/json
+
+{
+  "materialId": "{{materialId}}",
+  "sourceLocationId": "{{sl01}}",
+  "targetLocationId": "{{sl06}}",
+  "quantity": 10,
+  "movementDate": "2026-10-08T12:40:00Z",
+  "reference": "TEST-TRF-001"
+}
+
+
+### POST 13 - Transfer Insufficient Stock
+
+POST {{baseUrl}}/transfer
+Content-Type: application/json
+
+{
+  "materialId": "{{materialId}}",
+  "sourceLocationId": "{{sl01}}",
+  "targetLocationId": "{{sl06}}",
+  "quantity": 99999,
+  "movementDate": "2026-10-08T12:41:00Z",
+  "reference": "TEST-TRF-OVER"
+}
+
+
+### POST 14 - Transfer Same Location
+
+POST {{baseUrl}}/transfer
+Content-Type: application/json
+
+{
+  "materialId": "{{materialId}}",
+  "sourceLocationId": "{{sl01}}",
+  "targetLocationId": "{{sl01}}",
+  "quantity": 5,
+  "movementDate": "2026-10-08T12:42:00Z",
+  "reference": "TEST-TRF-SAME"
+}
+
+
+### POST 15 - Transfer Zero Quantity
+
+POST {{baseUrl}}/transfer
+Content-Type: application/json
+
+{
+  "materialId": "{{materialId}}",
+  "sourceLocationId": "{{sl01}}",
+  "targetLocationId": "{{sl06}}",
+  "quantity": 0,
+  "movementDate": "2026-10-08T12:43:00Z",
+  "reference": "TEST-TRF-ZERO"
+}
+
+
+### PATCH 16 - Movement Must Not Be Editable
+
+PATCH {{baseUrl}}/StockMovements(20000001-0000-0000-0000-000000000004)
+Content-Type: application/json
+
+{
+  "quantity": 999
+}
+
+
+### DELETE 17 - Movement Must Not Be Deleted
+
+DELETE {{baseUrl}}/StockMovements(20000001-0000-0000-0000-000000000004)
+
+
+### GET 18 - Verify MAT001 Movements
+
+GET {{baseUrl}}/StockMovements?$filter=material_ID%20eq%20%27{{materialId}}%27&$orderby=movementDate%20desc
+
+
+### GET 19 - Verify Transfer Movements
+
+GET {{baseUrl}}/StockMovements?$filter=movementType%20eq%20%27TRANSFER%27&$orderby=movementDate%20desc
+
+
+### GET 20 - Verify Latest Movements
+
+GET {{baseUrl}}/StockMovements?$orderby=movementDate%20desc&$top=10
