@@ -21,7 +21,9 @@
         "kind": "mocked",
         "users": {
           "clerk": {
-            "roles": ["Clerk"]
+            "roles": [
+              "Clerk"
+            ]
           }
         }
       },

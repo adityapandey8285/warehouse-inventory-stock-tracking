@@ -13,6 +13,10 @@
     {
       "name": "$XSAPPNAME.Manager",
       "description": "Plant Manager"
+    },
+    {
+      "name": "$XSAPPNAME.Clerk",
+      "description": "Clerk"
     }
   ],
   "attributes": [],
