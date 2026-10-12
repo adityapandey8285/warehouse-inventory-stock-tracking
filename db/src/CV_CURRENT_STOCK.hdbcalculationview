@@ -1,12 +1,157 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Calculation:scenario xmlns:Calculation="http://www.sap.com/ndb/BiModelCalculation.ecore"   id="CV_CURRENT_STOCK" applyPrivilegeType="NONE" dataCategory="CUBE" schemaVersion="3.0" hierarchyGeneration="SQL" outputViewType="Aggregation" cacheInvalidationPeriod="NONE" enforceSqlExecution="true" application="BAS">
-<descriptions defaultDescription="Current Stock"/>
+<Calculation:scenario xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:Calculation="http://www.sap.com/ndb/BiModelCalculation.ecore" id="CV_CURRENT_STOCK" applyPrivilegeType="NONE" dataCategory="CUBE" schemaVersion="3.0" hierarchyGeneration="SQL" outputViewType="Aggregation" cacheInvalidationPeriod="NONE" enforceSqlExecution="true" application="BAS">
+<descriptions defaultDescription="CV_CURRENT_STOCK"/>
 <localVariables/>
 <variableMappings/>
-<dataSources/>
-<calculationViews/>
+<dataSources>
+  <DataSource id="WAREHOUSE_INVENTORY_STOCKMOVEMENTS">
+    <resourceUri>WAREHOUSE_INVENTORY_STOCKMOVEMENTS</resourceUri>
+  </DataSource>
+  <DataSource id="P_ISSUE$$$$WAREHOUSE_INVENTORY_STOCKMOVEMENTS$$">
+    <resourceUri>WAREHOUSE_INVENTORY_STOCKMOVEMENTS</resourceUri>
+  </DataSource>
+  <DataSource id="P_TRANSFER_OUT$$$$WAREHOUSE_INVENTORY_STOCKMOVEMENTS$$">
+    <resourceUri>WAREHOUSE_INVENTORY_STOCKMOVEMENTS</resourceUri>
+  </DataSource>
+  <DataSource id="P_TRANSFER_IN$$$$WAREHOUSE_INVENTORY_STOCKMOVEMENTS$$">
+    <resourceUri>WAREHOUSE_INVENTORY_STOCKMOVEMENTS</resourceUri>
+  </DataSource>
+  <DataSource id="WAREHOUSE_INVENTORY_STORAGELOCATIONS">
+    <resourceUri>WAREHOUSE_INVENTORY_STORAGELOCATIONS</resourceUri>
+  </DataSource>
+</dataSources>
+<snapshotProcedures/>
+<calculationViews>
+  <calculationView xsi:type="Calculation:ProjectionView" id="P_RECEIPT" filterExpressionLanguage="SQL">
+    <viewAttributes>
+      <viewAttribute id="MATERIAL_ID"/>
+      <viewAttribute id="STORAGELOCATION_ID"/>
+      <viewAttribute id="QUANTITY"/>
+      <viewAttribute id="MOVEMENT_DATE"/>
+      <viewAttribute id="MOVEMENTTYPE"/>
+    </viewAttributes>
+    <calculatedViewAttributes>
+      <calculatedViewAttribute id="LOCATION_ID" datatype="NVARCHAR" length="36" expressionLanguage="SQL">
+        <formula>&quot;STORAGELOCATION_ID&quot;</formula>
+      </calculatedViewAttribute>
+      <calculatedViewAttribute id="SIGNED_QUANTITY" datatype="DECIMAL" length="15" scale="3" expressionLanguage="SQL">
+        <formula>&quot;QUANTITY&quot;</formula>
+      </calculatedViewAttribute>
+    </calculatedViewAttributes>
+    <input node="WAREHOUSE_INVENTORY_STOCKMOVEMENTS">
+      <mapping xsi:type="Calculation:AttributeMapping" target="MOVEMENT_DATE" source="MOVEMENTDATE"/>
+    </input>
+    <filter>&quot;MOVEMENTTYPE&quot; = 'RECEIPT'</filter>
+  </calculationView>
+  <calculationView xsi:type="Calculation:ProjectionView" id="P_ISSUE" filterExpressionLanguage="SQL">
+    <viewAttributes>
+      <viewAttribute id="STORAGELOCATION_ID"/>
+      <viewAttribute id="QUANTITY"/>
+      <viewAttribute id="MATERIAL_ID"/>
+      <viewAttribute id="MOVEMENT_DATE"/>
+    </viewAttributes>
+    <calculatedViewAttributes>
+      <calculatedViewAttribute id="LOCATION_ID" datatype="NVARCHAR" length="36" expressionLanguage="SQL">
+        <formula>&quot;STORAGELOCATION_ID&quot;</formula>
+      </calculatedViewAttribute>
+      <calculatedViewAttribute id="SIGNED_QUANTITY" datatype="DECIMAL" length="15" scale="3" expressionLanguage="SQL">
+        <formula>&quot;QUANTITY&quot;</formula>
+      </calculatedViewAttribute>
+    </calculatedViewAttributes>
+    <input node="P_ISSUE$$$$WAREHOUSE_INVENTORY_STOCKMOVEMENTS$$">
+      <mapping xsi:type="Calculation:AttributeMapping" target="MOVEMENT_DATE" source="MOVEMENTDATE"/>
+    </input>
+    <filter>&quot;MOVEMENTTYPE&quot;='ISSUE'</filter>
+  </calculationView>
+  <calculationView xsi:type="Calculation:ProjectionView" id="P_TRANSFER_OUT" filterExpressionLanguage="SQL">
+    <viewAttributes>
+      <viewAttribute id="MOVEMENTTYPE"/>
+      <viewAttribute id="SOURCELOCATION_ID"/>
+      <viewAttribute id="QUANTITY"/>
+      <viewAttribute id="MATERIAL_ID"/>
+      <viewAttribute id="MOVEMENT_DATE"/>
+    </viewAttributes>
+    <calculatedViewAttributes>
+      <calculatedViewAttribute id="LOCATION_ID" datatype="NVARCHAR" length="36" expressionLanguage="SQL">
+        <formula>&quot;SOURCELOCATION_ID&quot;</formula>
+      </calculatedViewAttribute>
+      <calculatedViewAttribute id="SIGNED_QUANTITY" datatype="DECIMAL" length="15" scale="3" expressionLanguage="SQL">
+        <formula>&quot;QUANTITY&quot; * -1</formula>
+      </calculatedViewAttribute>
+    </calculatedViewAttributes>
+    <input node="P_TRANSFER_OUT$$$$WAREHOUSE_INVENTORY_STOCKMOVEMENTS$$">
+      <mapping xsi:type="Calculation:AttributeMapping" target="MOVEMENT_DATE" source="MOVEMENTDATE"/>
+    </input>
+    <filter>&quot;MOVEMENTTYPE&quot;= 'TRANSFER'</filter>
+  </calculationView>
+  <calculationView xsi:type="Calculation:ProjectionView" id="P_TRANSFER_IN" filterExpressionLanguage="SQL">
+    <viewAttributes>
+      <viewAttribute id="MOVEMENTTYPE"/>
+      <viewAttribute id="TARGETLOCATION_ID"/>
+      <viewAttribute id="QUANTITY"/>
+      <viewAttribute id="MOVEMENT_DATE"/>
+      <viewAttribute id="MATERIAL_ID"/>
+    </viewAttributes>
+    <calculatedViewAttributes>
+      <calculatedViewAttribute id="LOCATION_ID" datatype="NVARCHAR" length="36" expressionLanguage="SQL">
+        <formula>&quot;TARGETLOCATION_ID&quot;</formula>
+      </calculatedViewAttribute>
+      <calculatedViewAttribute id="SIGNED_QUANTITY" datatype="DECIMAL" length="15" scale="3" expressionLanguage="SQL">
+        <formula>&quot;QUANTITY&quot;</formula>
+      </calculatedViewAttribute>
+    </calculatedViewAttributes>
+    <input node="P_TRANSFER_IN$$$$WAREHOUSE_INVENTORY_STOCKMOVEMENTS$$">
+      <mapping xsi:type="Calculation:AttributeMapping" target="MOVEMENT_DATE" source="MOVEMENTDATE"/>
+    </input>
+    <filter>&quot;MOVEMENTTYPE&quot; = 'TRANSFER'</filter>
+  </calculationView>
+  <calculationView xsi:type="Calculation:UnionView" id="UNION_MOVEMENTS">
+    <viewAttributes>
+      <viewAttribute id="MATERIAL_ID"/>
+      <viewAttribute id="SIGNED_QUANTITY" aggregationType="sum"/>
+      <viewAttribute id="LOCATION_ID"/>
+      <viewAttribute id="MOVEMENT_DATE" aggregationType="min"/>
+    </viewAttributes>
+    <calculatedViewAttributes/>
+    <input node="P_RECEIPT" emptyUnionBehavior="NO_ROW">
+      <mapping xsi:type="Calculation:AttributeMapping" target="MATERIAL_ID" source="MATERIAL_ID"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="SIGNED_QUANTITY" source="SIGNED_QUANTITY"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="LOCATION_ID" source="LOCATION_ID"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="MOVEMENT_DATE" source="MOVEMENT_DATE"/>
+    </input>
+    <input node="P_TRANSFER_OUT" emptyUnionBehavior="NO_ROW">
+      <mapping xsi:type="Calculation:AttributeMapping" target="MATERIAL_ID" source="MATERIAL_ID"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="SIGNED_QUANTITY" source="SIGNED_QUANTITY"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="LOCATION_ID" source="LOCATION_ID"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="MOVEMENT_DATE" source="MOVEMENT_DATE"/>
+    </input>
+    <input node="P_TRANSFER_IN" emptyUnionBehavior="NO_ROW">
+      <mapping xsi:type="Calculation:AttributeMapping" target="MATERIAL_ID" source="MATERIAL_ID"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="SIGNED_QUANTITY" source="SIGNED_QUANTITY"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="LOCATION_ID" source="LOCATION_ID"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="MOVEMENT_DATE" source="MOVEMENT_DATE"/>
+    </input>
+    <input node="P_ISSUE" emptyUnionBehavior="NO_ROW">
+      <mapping xsi:type="Calculation:AttributeMapping" target="MATERIAL_ID" source="MATERIAL_ID"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="SIGNED_QUANTITY" source="SIGNED_QUANTITY"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="LOCATION_ID" source="LOCATION_ID"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="MOVEMENT_DATE" source="MOVEMENT_DATE"/>
+    </input></calculationView>
+  <calculationView xsi:type="Calculation:JoinView" id="JOIN_LOCATION">
+    <viewAttributes>
+      <viewAttribute id="ID"/>
+      <viewAttribute hidden="true" id="JOIN$ID$LOCATION_ID"/>
+    </viewAttributes>
+    <calculatedViewAttributes/>
+    <input node="WAREHOUSE_INVENTORY_STORAGELOCATIONS">
+      <mapping xsi:type="Calculation:AttributeMapping" target="ID" source="ID"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="JOIN$ID$LOCATION_ID" source="ID"/>
+    </input>
+    <input node="UNION_MOVEMENTS"/>
+  </calculationView>
+</calculationViews>
 
-<logicalModel >
+<logicalModel>
   <attributes/>
   <calculatedAttributes/>
   <baseMeasures/>
@@ -17,9 +162,45 @@
 <layout>
   <shapes>
     <shape expanded="true" modelObjectName="Output" modelObjectNameSpace="MeasureGroup">
-      <upperLeftCorner x="40" y="85"/>
+      <upperLeftCorner x="100" y="105"/>
+    
+      <rectangleSize width="160"/>
     </shape>
     
-  </shapes>
+  
+    <shape expanded="true" modelObjectName="P_RECEIPT" modelObjectNameSpace="CalculationView">
+      <upperLeftCorner x="312" y="227"/>
+      <rectangleSize height="30" width="160"/>
+    </shape>
+    <shape expanded="true" modelObjectName="P_ISSUE" modelObjectNameSpace="CalculationView">
+      <upperLeftCorner x="721" y="221"/>
+      <rectangleSize height="30" width="160"/>
+    </shape>
+    <shape expanded="true" modelObjectName="P_TRANSFER_OUT" modelObjectNameSpace="CalculationView">
+      <upperLeftCorner x="511" y="221"/>
+      <rectangleSize height="30" width="160"/>
+    </shape>
+    <shape expanded="true" modelObjectName="P_TRANSFER_IN" modelObjectNameSpace="CalculationView">
+      <upperLeftCorner x="92" y="221"/>
+      <rectangleSize height="30" width="160"/>
+    </shape>
+    <shape expanded="true" modelObjectName="UNION_MOVEMENTS" modelObjectNameSpace="CalculationView">
+      <upperLeftCorner x="556" y="-23"/>
+      <rectangleSize height="30" width="160"/>
+    </shape>
+  
+    <shape expanded="true" modelObjectName="JOIN_LOCATION" modelObjectNameSpace="CalculationView">
+      <upperLeftCorner x="556" y="-154"/>
+      <rectangleSize height="30" width="160"/>
+    </shape>
+    <shape modelObjectName="WAREHOUSE_INVENTORY_STORAGELOCATIONS" modelObjectNameSpace="JOIN_LOCATION" modelObjectType="JoinNodeInput">
+      <upperLeftCorner x="20" y="30"/>
+      <rectangleSize width="354"/>
+    </shape>
+  
+    <shape modelObjectName="UNION_MOVEMENTS" modelObjectNameSpace="JOIN_LOCATION" modelObjectType="JoinNodeInput">
+      <upperLeftCorner x="463" y="88"/>
+      <rectangleSize width="209"/>
+    </shape></shapes>
 </layout>
 </Calculation:scenario>

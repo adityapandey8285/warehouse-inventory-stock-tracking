@@ -36,6 +36,7 @@ GET {{baseUrl}}/StockMovements?$filter=material_ID%20eq%20%27{{materialId}}%27
 
 POST {{baseUrl}}/receive
 Content-Type: application/json
+Authorization: Basic Y2xlcms6
 
 {
   "materialId": "{{materialId}}",
@@ -50,6 +51,7 @@ Content-Type: application/json
 
 POST {{baseUrl}}/receive
 Content-Type: application/json
+Authorization: Basic Y2xlcms6
 
 {
   "materialId": "{{materialId}}",
@@ -64,6 +66,7 @@ Content-Type: application/json
 
 POST {{baseUrl}}/receive
 Content-Type: application/json
+Authorization: Basic Y2xlcms6
 
 {
   "materialId": "{{invalidId}}",
@@ -73,11 +76,10 @@ Content-Type: application/json
   "reference": "TEST-GRN-BAD"
 }
 
-
 ### POST 9 - Valid Issue
-
 POST {{baseUrl}}/issue
 Content-Type: application/json
+Authorization: Basic Y2xlcms6
 
 {
   "materialId": "{{materialId}}",
@@ -92,6 +94,7 @@ Content-Type: application/json
 
 POST {{baseUrl}}/issue
 Content-Type: application/json
+Authorization: Basic Y2xlcms6
 
 {
   "materialId": "{{materialId}}",
@@ -106,6 +109,7 @@ Content-Type: application/json
 
 POST {{baseUrl}}/issue
 Content-Type: application/json
+Authorization: Basic Y2xlcms6
 
 {
   "materialId": "{{materialId}}",
@@ -120,6 +124,7 @@ Content-Type: application/json
 
 POST {{baseUrl}}/transfer
 Content-Type: application/json
+Authorization: Basic Y2xlcms6
 
 {
   "materialId": "{{materialId}}",
@@ -135,6 +140,7 @@ Content-Type: application/json
 
 POST {{baseUrl}}/transfer
 Content-Type: application/json
+Authorization: Basic Y2xlcms6
 
 {
   "materialId": "{{materialId}}",
@@ -150,6 +156,7 @@ Content-Type: application/json
 
 POST {{baseUrl}}/transfer
 Content-Type: application/json
+Authorization: Basic Y2xlcms6
 
 {
   "materialId": "{{materialId}}",
@@ -165,6 +172,7 @@ Content-Type: application/json
 
 POST {{baseUrl}}/transfer
 Content-Type: application/json
+Authorization: Basic Y2xlcms6
 
 {
   "materialId": "{{materialId}}",
