@@ -3,20 +3,16 @@
   "tenant-mode": "dedicated",
   "scopes": [
     {
-      "name": "$XSAPPNAME.Clerk",
-      "description": "Warehouse Clerk"
+      "name": "$XSAPPNAME.WarehouseClerk",
+      "description": "Record warehouse stock movements"
     },
     {
-      "name": "$XSAPPNAME.Supervisor",
-      "description": "Warehouse Supervisor"
+      "name": "$XSAPPNAME.WarehouseSupervisor",
+      "description": "View current stock and low-stock reports"
     },
     {
-      "name": "$XSAPPNAME.Manager",
-      "description": "Plant Manager"
-    },
-    {
-      "name": "$XSAPPNAME.Clerk",
-      "description": "Clerk"
+      "name": "$XSAPPNAME.PlantManager",
+      "description": "View all analytics reports"
     }
   ],
   "attributes": [],
@@ -25,21 +21,21 @@
       "name": "WarehouseClerk",
       "description": "Warehouse Clerk",
       "scope-references": [
-        "$XSAPPNAME.Clerk"
+        "$XSAPPNAME.WarehouseClerk"
       ]
     },
     {
       "name": "WarehouseSupervisor",
       "description": "Warehouse Supervisor",
       "scope-references": [
-        "$XSAPPNAME.Supervisor"
+        "$XSAPPNAME.WarehouseSupervisor"
       ]
     },
     {
       "name": "PlantManager",
       "description": "Plant Manager",
       "scope-references": [
-        "$XSAPPNAME.Manager"
+        "$XSAPPNAME.PlantManager"
       ]
     }
   ]

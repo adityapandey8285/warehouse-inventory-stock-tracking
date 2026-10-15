@@ -7,154 +7,363 @@
   <DataSource id="WAREHOUSE_INVENTORY_STOCKMOVEMENTS">
     <resourceUri>WAREHOUSE_INVENTORY_STOCKMOVEMENTS</resourceUri>
   </DataSource>
-  <DataSource id="P_ISSUE$$$$WAREHOUSE_INVENTORY_STOCKMOVEMENTS$$">
-    <resourceUri>WAREHOUSE_INVENTORY_STOCKMOVEMENTS</resourceUri>
-  </DataSource>
   <DataSource id="P_TRANSFER_OUT$$$$WAREHOUSE_INVENTORY_STOCKMOVEMENTS$$">
     <resourceUri>WAREHOUSE_INVENTORY_STOCKMOVEMENTS</resourceUri>
   </DataSource>
   <DataSource id="P_TRANSFER_IN$$$$WAREHOUSE_INVENTORY_STOCKMOVEMENTS$$">
     <resourceUri>WAREHOUSE_INVENTORY_STOCKMOVEMENTS</resourceUri>
   </DataSource>
+  <DataSource id="WAREHOUSE_INVENTORY_MATERIALS">
+    <resourceUri>WAREHOUSE_INVENTORY_MATERIALS</resourceUri>
+  </DataSource>
   <DataSource id="WAREHOUSE_INVENTORY_STORAGELOCATIONS">
     <resourceUri>WAREHOUSE_INVENTORY_STORAGELOCATIONS</resourceUri>
+  </DataSource>
+  <DataSource id="WAREHOUSE_INVENTORY_PLANTS">
+    <resourceUri>WAREHOUSE_INVENTORY_PLANTS</resourceUri>
   </DataSource>
 </dataSources>
 <snapshotProcedures/>
 <calculationViews>
-  <calculationView xsi:type="Calculation:ProjectionView" id="P_RECEIPT" filterExpressionLanguage="SQL">
+  <calculationView xsi:type="Calculation:ProjectionView" id="P_RECEIPT_ISSUE" filterExpressionLanguage="SQL">
     <viewAttributes>
       <viewAttribute id="MATERIAL_ID"/>
-      <viewAttribute id="STORAGELOCATION_ID"/>
-      <viewAttribute id="QUANTITY"/>
-      <viewAttribute id="MOVEMENT_DATE"/>
+      <viewAttribute id="LOCATION_ID"/>
       <viewAttribute id="MOVEMENTTYPE"/>
+      <viewAttribute id="QUANTITY"/>
     </viewAttributes>
     <calculatedViewAttributes>
-      <calculatedViewAttribute id="LOCATION_ID" datatype="NVARCHAR" length="36" expressionLanguage="SQL">
-        <formula>&quot;STORAGELOCATION_ID&quot;</formula>
-      </calculatedViewAttribute>
       <calculatedViewAttribute id="SIGNED_QUANTITY" datatype="DECIMAL" length="15" scale="3" expressionLanguage="SQL">
-        <formula>&quot;QUANTITY&quot;</formula>
+        <formula>CASE
+  WHEN &quot;MOVEMENTTYPE&quot; = 'RECEIPT'
+  THEN &quot;QUANTITY&quot;
+  ELSE -1 * &quot;QUANTITY&quot;
+END</formula>
+      </calculatedViewAttribute>
+    
+      <calculatedViewAttribute id="MOVEMENT_TYPE" datatype="NVARCHAR" length="20" expressionLanguage="SQL">
+        <formula>&quot;MOVEMENTTYPE&quot;</formula>
       </calculatedViewAttribute>
     </calculatedViewAttributes>
     <input node="WAREHOUSE_INVENTORY_STOCKMOVEMENTS">
-      <mapping xsi:type="Calculation:AttributeMapping" target="MOVEMENT_DATE" source="MOVEMENTDATE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="LOCATION_ID" source="STORAGELOCATION_ID"/>
     </input>
-    <filter>&quot;MOVEMENTTYPE&quot; = 'RECEIPT'</filter>
-  </calculationView>
-  <calculationView xsi:type="Calculation:ProjectionView" id="P_ISSUE" filterExpressionLanguage="SQL">
-    <viewAttributes>
-      <viewAttribute id="STORAGELOCATION_ID"/>
-      <viewAttribute id="QUANTITY"/>
-      <viewAttribute id="MATERIAL_ID"/>
-      <viewAttribute id="MOVEMENT_DATE"/>
-    </viewAttributes>
-    <calculatedViewAttributes>
-      <calculatedViewAttribute id="LOCATION_ID" datatype="NVARCHAR" length="36" expressionLanguage="SQL">
-        <formula>&quot;STORAGELOCATION_ID&quot;</formula>
-      </calculatedViewAttribute>
-      <calculatedViewAttribute id="SIGNED_QUANTITY" datatype="DECIMAL" length="15" scale="3" expressionLanguage="SQL">
-        <formula>&quot;QUANTITY&quot;</formula>
-      </calculatedViewAttribute>
-    </calculatedViewAttributes>
-    <input node="P_ISSUE$$$$WAREHOUSE_INVENTORY_STOCKMOVEMENTS$$">
-      <mapping xsi:type="Calculation:AttributeMapping" target="MOVEMENT_DATE" source="MOVEMENTDATE"/>
-    </input>
-    <filter>&quot;MOVEMENTTYPE&quot;='ISSUE'</filter>
+    <filter>&quot;MOVEMENTTYPE&quot; = 'RECEIPT' OR &quot;MOVEMENTTYPE&quot; = 'ISSUE'</filter>
   </calculationView>
   <calculationView xsi:type="Calculation:ProjectionView" id="P_TRANSFER_OUT" filterExpressionLanguage="SQL">
     <viewAttributes>
-      <viewAttribute id="MOVEMENTTYPE"/>
-      <viewAttribute id="SOURCELOCATION_ID"/>
-      <viewAttribute id="QUANTITY"/>
       <viewAttribute id="MATERIAL_ID"/>
-      <viewAttribute id="MOVEMENT_DATE"/>
+      <viewAttribute id="LOCATION_ID"/>
+      <viewAttribute id="MOVEMENTTYPE"/>
+      <viewAttribute id="QUANTITY"/>
     </viewAttributes>
     <calculatedViewAttributes>
-      <calculatedViewAttribute id="LOCATION_ID" datatype="NVARCHAR" length="36" expressionLanguage="SQL">
-        <formula>&quot;SOURCELOCATION_ID&quot;</formula>
-      </calculatedViewAttribute>
       <calculatedViewAttribute id="SIGNED_QUANTITY" datatype="DECIMAL" length="15" scale="3" expressionLanguage="SQL">
-        <formula>&quot;QUANTITY&quot; * -1</formula>
+        <formula>-&quot;QUANTITY&quot;</formula>
+      </calculatedViewAttribute>
+    
+      <calculatedViewAttribute id="MOVEMENT_TYPE" datatype="NVARCHAR" length="20" expressionLanguage="SQL">
+        <formula>'TRANSFER_OUT'</formula>
       </calculatedViewAttribute>
     </calculatedViewAttributes>
     <input node="P_TRANSFER_OUT$$$$WAREHOUSE_INVENTORY_STOCKMOVEMENTS$$">
-      <mapping xsi:type="Calculation:AttributeMapping" target="MOVEMENT_DATE" source="MOVEMENTDATE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="LOCATION_ID" source="SOURCELOCATION_ID"/>
     </input>
-    <filter>&quot;MOVEMENTTYPE&quot;= 'TRANSFER'</filter>
+    <filter>&quot;MOVEMENTTYPE&quot; = 'TRANSFER'</filter>
   </calculationView>
   <calculationView xsi:type="Calculation:ProjectionView" id="P_TRANSFER_IN" filterExpressionLanguage="SQL">
     <viewAttributes>
-      <viewAttribute id="MOVEMENTTYPE"/>
-      <viewAttribute id="TARGETLOCATION_ID"/>
-      <viewAttribute id="QUANTITY"/>
-      <viewAttribute id="MOVEMENT_DATE"/>
       <viewAttribute id="MATERIAL_ID"/>
+      <viewAttribute id="LOCATION_ID"/>
+      <viewAttribute id="MOVEMENTTYPE"/>
+      <viewAttribute id="QUANTITY"/>
     </viewAttributes>
     <calculatedViewAttributes>
-      <calculatedViewAttribute id="LOCATION_ID" datatype="NVARCHAR" length="36" expressionLanguage="SQL">
-        <formula>&quot;TARGETLOCATION_ID&quot;</formula>
-      </calculatedViewAttribute>
       <calculatedViewAttribute id="SIGNED_QUANTITY" datatype="DECIMAL" length="15" scale="3" expressionLanguage="SQL">
         <formula>&quot;QUANTITY&quot;</formula>
       </calculatedViewAttribute>
+    
+      <calculatedViewAttribute id="MOVEMENT_TYPE" datatype="NVARCHAR" length="20" expressionLanguage="SQL">
+        <formula>'TRANSFER_IN'</formula>
+      </calculatedViewAttribute>
     </calculatedViewAttributes>
     <input node="P_TRANSFER_IN$$$$WAREHOUSE_INVENTORY_STOCKMOVEMENTS$$">
-      <mapping xsi:type="Calculation:AttributeMapping" target="MOVEMENT_DATE" source="MOVEMENTDATE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="LOCATION_ID" source="TARGETLOCATION_ID"/>
     </input>
     <filter>&quot;MOVEMENTTYPE&quot; = 'TRANSFER'</filter>
   </calculationView>
   <calculationView xsi:type="Calculation:UnionView" id="UNION_MOVEMENTS">
     <viewAttributes>
-      <viewAttribute id="MATERIAL_ID"/>
       <viewAttribute id="SIGNED_QUANTITY" aggregationType="sum"/>
+    
+      <viewAttribute id="MATERIAL_ID"/>
       <viewAttribute id="LOCATION_ID"/>
-      <viewAttribute id="MOVEMENT_DATE" aggregationType="min"/>
+    
+      <viewAttribute id="MOVEMENT_TYPE"/>
     </viewAttributes>
     <calculatedViewAttributes/>
-    <input node="P_RECEIPT" emptyUnionBehavior="NO_ROW">
-      <mapping xsi:type="Calculation:AttributeMapping" target="MATERIAL_ID" source="MATERIAL_ID"/>
+    <input node="P_RECEIPT_ISSUE" emptyUnionBehavior="NO_ROW">
       <mapping xsi:type="Calculation:AttributeMapping" target="SIGNED_QUANTITY" source="SIGNED_QUANTITY"/>
+    
+      <mapping xsi:type="Calculation:AttributeMapping" target="MATERIAL_ID" source="MATERIAL_ID"/>
       <mapping xsi:type="Calculation:AttributeMapping" target="LOCATION_ID" source="LOCATION_ID"/>
-      <mapping xsi:type="Calculation:AttributeMapping" target="MOVEMENT_DATE" source="MOVEMENT_DATE"/>
+    
+      <mapping xsi:type="Calculation:AttributeMapping" target="MOVEMENT_TYPE" source="MOVEMENT_TYPE"/>
     </input>
     <input node="P_TRANSFER_OUT" emptyUnionBehavior="NO_ROW">
-      <mapping xsi:type="Calculation:AttributeMapping" target="MATERIAL_ID" source="MATERIAL_ID"/>
       <mapping xsi:type="Calculation:AttributeMapping" target="SIGNED_QUANTITY" source="SIGNED_QUANTITY"/>
+    
+      <mapping xsi:type="Calculation:AttributeMapping" target="MATERIAL_ID" source="MATERIAL_ID"/>
       <mapping xsi:type="Calculation:AttributeMapping" target="LOCATION_ID" source="LOCATION_ID"/>
-      <mapping xsi:type="Calculation:AttributeMapping" target="MOVEMENT_DATE" source="MOVEMENT_DATE"/>
+    
+      <mapping xsi:type="Calculation:AttributeMapping" target="MOVEMENT_TYPE" source="MOVEMENT_TYPE"/>
     </input>
     <input node="P_TRANSFER_IN" emptyUnionBehavior="NO_ROW">
-      <mapping xsi:type="Calculation:AttributeMapping" target="MATERIAL_ID" source="MATERIAL_ID"/>
       <mapping xsi:type="Calculation:AttributeMapping" target="SIGNED_QUANTITY" source="SIGNED_QUANTITY"/>
+    
+      <mapping xsi:type="Calculation:AttributeMapping" target="MATERIAL_ID" source="MATERIAL_ID"/>
       <mapping xsi:type="Calculation:AttributeMapping" target="LOCATION_ID" source="LOCATION_ID"/>
-      <mapping xsi:type="Calculation:AttributeMapping" target="MOVEMENT_DATE" source="MOVEMENT_DATE"/>
+    
+      <mapping xsi:type="Calculation:AttributeMapping" target="MOVEMENT_TYPE" source="MOVEMENT_TYPE"/>
     </input>
-    <input node="P_ISSUE" emptyUnionBehavior="NO_ROW">
-      <mapping xsi:type="Calculation:AttributeMapping" target="MATERIAL_ID" source="MATERIAL_ID"/>
-      <mapping xsi:type="Calculation:AttributeMapping" target="SIGNED_QUANTITY" source="SIGNED_QUANTITY"/>
-      <mapping xsi:type="Calculation:AttributeMapping" target="LOCATION_ID" source="LOCATION_ID"/>
-      <mapping xsi:type="Calculation:AttributeMapping" target="MOVEMENT_DATE" source="MOVEMENT_DATE"/>
-    </input></calculationView>
-  <calculationView xsi:type="Calculation:JoinView" id="JOIN_LOCATION">
+  </calculationView>
+  <calculationView xsi:type="Calculation:AggregationView" id="AGG_STOCK">
     <viewAttributes>
-      <viewAttribute id="ID"/>
-      <viewAttribute hidden="true" id="JOIN$ID$LOCATION_ID"/>
+      <viewAttribute id="CURRENT_STOCK" aggregationType="sum"/>
+    
+      <viewAttribute id="MATERIAL_ID"/>
+      <viewAttribute id="LOCATION_ID"/>
+    
+      <viewAttribute id="MOVEMENT_TYPE"/>
     </viewAttributes>
     <calculatedViewAttributes/>
-    <input node="WAREHOUSE_INVENTORY_STORAGELOCATIONS">
-      <mapping xsi:type="Calculation:AttributeMapping" target="ID" source="ID"/>
-      <mapping xsi:type="Calculation:AttributeMapping" target="JOIN$ID$LOCATION_ID" source="ID"/>
+    <restrictedViewAttributes/>
+    <input node="UNION_MOVEMENTS">
+      <mapping xsi:type="Calculation:AttributeMapping" target="CURRENT_STOCK" source="SIGNED_QUANTITY"/>
     </input>
-    <input node="UNION_MOVEMENTS"/>
+  </calculationView>
+  <calculationView xsi:type="Calculation:JoinView" id="JOIN_MATERIAL">
+    <viewAttributes>
+      <viewAttribute id="CURRENT_STOCK" aggregationType="sum"/>
+      <viewAttribute id="MATERIALCODE"/>
+      <viewAttribute id="MATERIALNAME"/>
+      <viewAttribute id="UNITOFMEASURE"/>
+      <viewAttribute id="UNITPRICE" aggregationType="sum"/>
+      <viewAttribute id="REORDERLEVEL" aggregationType="sum"/>
+      <viewAttribute id="ACTIVE"/>
+    
+      <viewAttribute id="MATERIAL_ID"/>
+      <viewAttribute id="LOCATION_ID"/>
+    
+      <viewAttribute id="MOVEMENT_TYPE"/>
+    </viewAttributes>
+    <calculatedViewAttributes/>
+    <input node="AGG_STOCK">
+      <mapping xsi:type="Calculation:AttributeMapping" target="CURRENT_STOCK" source="CURRENT_STOCK"/>
+    
+      <mapping xsi:type="Calculation:AttributeMapping" target="MATERIAL_ID" source="MATERIAL_ID"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="LOCATION_ID" source="LOCATION_ID"/>
+    
+      <mapping xsi:type="Calculation:AttributeMapping" target="MOVEMENT_TYPE" source="MOVEMENT_TYPE"/>
+    </input>
+    <input node="WAREHOUSE_INVENTORY_MATERIALS">
+      <mapping xsi:type="Calculation:AttributeMapping" target="MATERIALCODE" source="MATERIALCODE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="MATERIALNAME" source="MATERIALNAME"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="UNITOFMEASURE" source="UNITOFMEASURE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="UNITPRICE" source="UNITPRICE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="REORDERLEVEL" source="REORDERLEVEL"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="ACTIVE" source="ACTIVE"/>
+    </input>
+  </calculationView>
+  <calculationView xsi:type="Calculation:JoinView" id="JOIN_LOCATION">
+    <viewAttributes>
+      <viewAttribute id="MATERIALCODE"/>
+      <viewAttribute id="MATERIALNAME"/>
+      <viewAttribute id="UNITOFMEASURE"/>
+      <viewAttribute id="CURRENT_STOCK" aggregationType="sum"/>
+      <viewAttribute id="UNITPRICE" aggregationType="sum"/>
+      <viewAttribute id="REORDERLEVEL" aggregationType="sum"/>
+      <viewAttribute id="ACTIVE"/>
+      <viewAttribute id="LOCATIONCODE"/>
+      <viewAttribute id="LOCATIONNAME"/>
+      <viewAttribute id="PLANT_ID"/>
+    
+      <viewAttribute id="MATERIAL_ID"/>
+      <viewAttribute id="LOCATION_ID"/>
+    
+      <viewAttribute id="MOVEMENT_TYPE"/>
+    </viewAttributes>
+    <calculatedViewAttributes/>
+    <input node="JOIN_MATERIAL">
+      <mapping xsi:type="Calculation:AttributeMapping" target="MATERIALCODE" source="MATERIALCODE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="MATERIALNAME" source="MATERIALNAME"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="UNITOFMEASURE" source="UNITOFMEASURE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="CURRENT_STOCK" source="CURRENT_STOCK"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="UNITPRICE" source="UNITPRICE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="REORDERLEVEL" source="REORDERLEVEL"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="ACTIVE" source="ACTIVE"/>
+    
+      <mapping xsi:type="Calculation:AttributeMapping" target="MATERIAL_ID" source="MATERIAL_ID"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="LOCATION_ID" source="LOCATION_ID"/>
+    
+      <mapping xsi:type="Calculation:AttributeMapping" target="MOVEMENT_TYPE" source="MOVEMENT_TYPE"/>
+    </input>
+    <input node="WAREHOUSE_INVENTORY_STORAGELOCATIONS">
+      <mapping xsi:type="Calculation:AttributeMapping" target="LOCATIONCODE" source="LOCATIONCODE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="LOCATIONNAME" source="LOCATIONNAME"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="PLANT_ID" source="PLANT_ID"/>
+    </input>
+  </calculationView>
+  <calculationView xsi:type="Calculation:JoinView" id="JOIN_PLANT" cardinality="CN_1" joinType="inner">
+    <viewAttributes>
+      <viewAttribute id="PLANT_ID"/>
+      <viewAttribute id="LOCATIONCODE"/>
+      <viewAttribute id="LOCATIONNAME"/>
+      <viewAttribute id="MATERIALCODE"/>
+      <viewAttribute id="MATERIALNAME"/>
+      <viewAttribute id="UNITOFMEASURE"/>
+      <viewAttribute id="CURRENT_STOCK" aggregationType="sum"/>
+      <viewAttribute id="UNITPRICE" aggregationType="sum"/>
+      <viewAttribute id="REORDERLEVEL" aggregationType="sum"/>
+      <viewAttribute id="ACTIVE"/>
+      <viewAttribute id="PLANTCODE"/>
+      <viewAttribute id="PLANTNAME"/>
+      <viewAttribute id="MATERIAL_ID"/>
+      <viewAttribute id="LOCATION_ID"/>
+      <viewAttribute id="MOVEMENT_TYPE"/>
+      <viewAttribute hidden="true" id="JOIN$PLANT_ID$ID"/>
+    </viewAttributes>
+    <calculatedViewAttributes/>
+    <input node="JOIN_LOCATION">
+      <mapping xsi:type="Calculation:AttributeMapping" target="PLANT_ID" source="PLANT_ID"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="LOCATIONCODE" source="LOCATIONCODE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="LOCATIONNAME" source="LOCATIONNAME"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="MATERIALCODE" source="MATERIALCODE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="MATERIALNAME" source="MATERIALNAME"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="UNITOFMEASURE" source="UNITOFMEASURE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="CURRENT_STOCK" source="CURRENT_STOCK"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="UNITPRICE" source="UNITPRICE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="REORDERLEVEL" source="REORDERLEVEL"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="ACTIVE" source="ACTIVE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="MATERIAL_ID" source="MATERIAL_ID"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="LOCATION_ID" source="LOCATION_ID"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="MOVEMENT_TYPE" source="MOVEMENT_TYPE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="JOIN$PLANT_ID$ID" source="PLANT_ID"/>
+    </input>
+    <input node="WAREHOUSE_INVENTORY_PLANTS">
+      <mapping xsi:type="Calculation:AttributeMapping" target="PLANTCODE" source="PLANTCODE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="PLANTNAME" source="PLANTNAME"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="JOIN$PLANT_ID$ID" source="ID"/>
+    </input>
+    <joinAttribute name="JOIN$PLANT_ID$ID"/>
+  </calculationView>
+  <calculationView xsi:type="Calculation:ProjectionView" id="P_STOCK_VALUE">
+    <viewAttributes>
+      <viewAttribute id="PLANT_ID"/>
+      <viewAttribute id="PLANTCODE"/>
+      <viewAttribute id="PLANTNAME"/>
+      <viewAttribute id="LOCATIONCODE"/>
+      <viewAttribute id="LOCATIONNAME"/>
+      <viewAttribute id="MATERIALCODE"/>
+      <viewAttribute id="MATERIALNAME"/>
+      <viewAttribute id="UNITOFMEASURE"/>
+      <viewAttribute id="CURRENT_STOCK"/>
+      <viewAttribute id="UNITPRICE"/>
+      <viewAttribute id="REORDERLEVEL"/>
+      <viewAttribute id="ACTIVE"/>
+    
+      <viewAttribute id="MATERIAL_ID"/>
+      <viewAttribute id="LOCATION_ID"/>
+    
+      <viewAttribute id="MOVEMENT_TYPE"/>
+    </viewAttributes>
+    <calculatedViewAttributes>
+      <calculatedViewAttribute id="STOCK_VALUE" datatype="DECIMAL" length="20" scale="1" expressionLanguage="SQL">
+        <formula>&quot;CURRENT_STOCK&quot; * &quot;UNITPRICE&quot;</formula>
+      </calculatedViewAttribute>
+    </calculatedViewAttributes>
+    <input node="JOIN_PLANT"/>
   </calculationView>
 </calculationViews>
 
-<logicalModel>
-  <attributes/>
+<logicalModel id="P_STOCK_VALUE">
+  <attributes>
+    <attribute id="PLANT_ID" order="1" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="PLANT_ID"/>
+      <keyMapping columnObjectName="P_STOCK_VALUE" columnName="PLANT_ID"/>
+    </attribute>
+    <attribute id="PLANTCODE" order="2" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="PLANTCODE"/>
+      <keyMapping columnObjectName="P_STOCK_VALUE" columnName="PLANTCODE"/>
+    </attribute>
+    <attribute id="PLANTNAME" order="3" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="PLANTNAME"/>
+      <keyMapping columnObjectName="P_STOCK_VALUE" columnName="PLANTNAME"/>
+    </attribute>
+    <attribute id="LOCATIONCODE" order="4" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="LOCATIONCODE"/>
+      <keyMapping columnObjectName="P_STOCK_VALUE" columnName="LOCATIONCODE"/>
+    </attribute>
+    <attribute id="LOCATIONNAME" order="5" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="LOCATIONNAME"/>
+      <keyMapping columnObjectName="P_STOCK_VALUE" columnName="LOCATIONNAME"/>
+    </attribute>
+    <attribute id="MATERIALCODE" order="6" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="MATERIALCODE"/>
+      <keyMapping columnObjectName="P_STOCK_VALUE" columnName="MATERIALCODE"/>
+    </attribute>
+    <attribute id="MATERIALNAME" order="7" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="MATERIALNAME"/>
+      <keyMapping columnObjectName="P_STOCK_VALUE" columnName="MATERIALNAME"/>
+    </attribute>
+    <attribute id="UNITOFMEASURE" order="8" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="UNITOFMEASURE"/>
+      <keyMapping columnObjectName="P_STOCK_VALUE" columnName="UNITOFMEASURE"/>
+    </attribute>
+    <attribute id="ACTIVE" order="12" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="ACTIVE"/>
+      <keyMapping columnObjectName="P_STOCK_VALUE" columnName="ACTIVE"/>
+    </attribute>
+  
+    <attribute id="MATERIAL_ID" order="14" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="MATERIAL_ID"/>
+  
+      <keyMapping columnObjectName="P_STOCK_VALUE" columnName="MATERIAL_ID"/>
+  
+    </attribute>
+    <attribute id="LOCATION_ID" order="15" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="LOCATION_ID"/>
+      <keyMapping columnObjectName="P_STOCK_VALUE" columnName="LOCATION_ID"/>
+    </attribute>
+  
+    <attribute id="MOVEMENT_TYPE" order="16" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="MOVEMENT_TYPE"/>
+      <keyMapping columnObjectName="P_STOCK_VALUE" columnName="MOVEMENT_TYPE"/>
+    </attribute>
+  </attributes>
   <calculatedAttributes/>
-  <baseMeasures/>
+  <baseMeasures>
+    <measure id="CURRENT_STOCK" order="9" aggregationType="sum" measureType="simple">
+      <descriptions defaultDescription="SIGNED_QUANTITY"/>
+      <measureMapping columnObjectName="P_STOCK_VALUE" columnName="CURRENT_STOCK"/>
+      <exceptionAggregationMetadata/>
+    </measure>
+    <measure id="UNITPRICE" order="10" aggregationType="max" measureType="simple">
+      <descriptions defaultDescription="UNITPRICE"/>
+      <measureMapping columnObjectName="P_STOCK_VALUE" columnName="UNITPRICE"/>
+      <exceptionAggregationMetadata/>
+    </measure>
+    <measure id="REORDERLEVEL" order="11" aggregationType="max" measureType="simple">
+      <descriptions defaultDescription="REORDERLEVEL"/>
+      <measureMapping columnObjectName="P_STOCK_VALUE" columnName="REORDERLEVEL"/>
+      <exceptionAggregationMetadata/>
+    </measure>
+    <measure id="STOCK_VALUE" order="13" aggregationType="sum" measureType="simple">
+      <descriptions defaultDescription="STOCK_VALUE"/>
+      <measureMapping columnObjectName="P_STOCK_VALUE" columnName="STOCK_VALUE"/>
+      <exceptionAggregationMetadata/>
+    </measure>
+  </baseMeasures>
   <calculatedMeasures/>
   <restrictedMeasures/>
   <localDimensions/>
@@ -162,45 +371,72 @@
 <layout>
   <shapes>
     <shape expanded="true" modelObjectName="Output" modelObjectNameSpace="MeasureGroup">
-      <upperLeftCorner x="100" y="105"/>
+      <upperLeftCorner x="400" y="112"/>
     
       <rectangleSize width="160"/>
     </shape>
     
   
-    <shape expanded="true" modelObjectName="P_RECEIPT" modelObjectNameSpace="CalculationView">
-      <upperLeftCorner x="312" y="227"/>
+    <shape expanded="true" modelObjectName="P_RECEIPT_ISSUE" modelObjectNameSpace="CalculationView">
+      <upperLeftCorner x="92" y="1061"/>
       <rectangleSize height="30" width="160"/>
     </shape>
-    <shape expanded="true" modelObjectName="P_ISSUE" modelObjectNameSpace="CalculationView">
-      <upperLeftCorner x="721" y="221"/>
-      <rectangleSize height="30" width="160"/>
-    </shape>
-    <shape expanded="true" modelObjectName="P_TRANSFER_OUT" modelObjectNameSpace="CalculationView">
-      <upperLeftCorner x="511" y="221"/>
+    <shape expanded="false" modelObjectName="P_TRANSFER_OUT" modelObjectNameSpace="CalculationView">
+      <upperLeftCorner x="512" y="1061"/>
       <rectangleSize height="30" width="160"/>
     </shape>
     <shape expanded="true" modelObjectName="P_TRANSFER_IN" modelObjectNameSpace="CalculationView">
-      <upperLeftCorner x="92" y="221"/>
+      <upperLeftCorner x="302" y="1061"/>
       <rectangleSize height="30" width="160"/>
     </shape>
     <shape expanded="true" modelObjectName="UNION_MOVEMENTS" modelObjectNameSpace="CalculationView">
-      <upperLeftCorner x="556" y="-23"/>
+      <upperLeftCorner x="302" y="906"/>
       <rectangleSize height="30" width="160"/>
     </shape>
-  
-    <shape expanded="true" modelObjectName="JOIN_LOCATION" modelObjectNameSpace="CalculationView">
-      <upperLeftCorner x="556" y="-154"/>
+    <shape expanded="true" modelObjectName="AGG_STOCK" modelObjectNameSpace="CalculationView">
+      <upperLeftCorner x="380" y="781"/>
       <rectangleSize height="30" width="160"/>
+    </shape>
+    <shape expanded="true" modelObjectName="JOIN_MATERIAL" modelObjectNameSpace="CalculationView">
+      <upperLeftCorner x="380" y="641"/>
+      <rectangleSize height="30" width="160"/>
+    </shape>
+    <shape modelObjectName="AGG_STOCK" modelObjectNameSpace="JOIN_MATERIAL" modelObjectType="JoinNodeInput">
+      <upperLeftCorner x="20" y="30"/>
+      <rectangleSize width="203"/>
+    </shape>
+    <shape modelObjectName="WAREHOUSE_INVENTORY_MATERIALS" modelObjectNameSpace="JOIN_MATERIAL" modelObjectType="JoinNodeInput">
+      <upperLeftCorner x="295" y="30"/>
+      <rectangleSize width="294"/>
+    </shape>
+    <shape expanded="true" modelObjectName="JOIN_LOCATION" modelObjectNameSpace="CalculationView">
+      <upperLeftCorner x="399" y="481"/>
+      <rectangleSize height="30" width="160"/>
+    </shape>
+    <shape modelObjectName="JOIN_MATERIAL" modelObjectNameSpace="JOIN_LOCATION" modelObjectType="JoinNodeInput">
+      <upperLeftCorner x="20" y="30"/>
+      <rectangleSize width="203"/>
     </shape>
     <shape modelObjectName="WAREHOUSE_INVENTORY_STORAGELOCATIONS" modelObjectNameSpace="JOIN_LOCATION" modelObjectType="JoinNodeInput">
-      <upperLeftCorner x="20" y="30"/>
+      <upperLeftCorner x="320" y="30"/>
       <rectangleSize width="354"/>
     </shape>
-  
-    <shape modelObjectName="UNION_MOVEMENTS" modelObjectNameSpace="JOIN_LOCATION" modelObjectType="JoinNodeInput">
-      <upperLeftCorner x="463" y="88"/>
-      <rectangleSize width="209"/>
-    </shape></shapes>
+    <shape expanded="true" modelObjectName="JOIN_PLANT" modelObjectNameSpace="CalculationView">
+      <upperLeftCorner x="399" y="341"/>
+      <rectangleSize height="30" width="160"/>
+    </shape>
+    <shape modelObjectName="JOIN_LOCATION" modelObjectNameSpace="JOIN_PLANT" modelObjectType="JoinNodeInput">
+      <upperLeftCorner x="20" y="30"/>
+      <rectangleSize width="203"/>
+    </shape>
+    <shape modelObjectName="WAREHOUSE_INVENTORY_PLANTS" modelObjectNameSpace="JOIN_PLANT" modelObjectType="JoinNodeInput">
+      <upperLeftCorner x="320" y="30"/>
+      <rectangleSize width="273"/>
+    </shape>
+    <shape expanded="true" modelObjectName="P_STOCK_VALUE" modelObjectNameSpace="CalculationView">
+      <upperLeftCorner x="400" y="217"/>
+      <rectangleSize height="30" width="160"/>
+    </shape>
+  </shapes>
 </layout>
 </Calculation:scenario>

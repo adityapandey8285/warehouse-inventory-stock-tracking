@@ -12,11 +12,11 @@ export default cds.service.impl(async function () {
     function criticalityFor(type) {
         switch (type) {
             case 'ISSUE':
-                return 1; // Red
+                return 1;
             case 'RECEIPT':
-                return 3; // Green
+                return 3;
             case 'TRANSFER':
-                return 5; // Blue
+                return 5;
             default:
                 return 0;
         }
@@ -161,6 +161,15 @@ export default cds.service.impl(async function () {
                     criticalityFor(row.movementType);
             }
         }
+    });
+
+    // BLOCK direct creation of stock movements.
+    // Use receive, issue, or transfer actions instead.
+    this.before('CREATE', 'StockMovements', req => {
+        return req.reject(
+            405,
+            'Create stock movements using receive, issue or transfer actions.'
+        );
     });
 
     // Movement history cannot be edited or deleted.
@@ -379,13 +388,13 @@ export default cds.service.impl(async function () {
 
             if (stock <= 0) {
                 stockStatus = 'Out of Stock';
-                criticality = 1; // Red
+                criticality = 1;
             } else if (stock < reorder) {
                 stockStatus = 'Low Stock';
-                criticality = 2; // Yellow/orange
+                criticality = 2;
             } else {
                 stockStatus = 'Sufficient';
-                criticality = 3; // Green
+                criticality = 3;
             }
 
             return {

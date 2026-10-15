@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Calculation:scenario xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:Calculation="http://www.sap.com/ndb/BiModelCalculation.ecore" id="CV_LOW_STOCK_MATERIALS" applyPrivilegeType="NONE" dataCategory="CUBE" schemaVersion="3.0" hierarchyGeneration="SQL" outputViewType="Aggregation" cacheInvalidationPeriod="NONE" enforceSqlExecution="true" application="BAS">
+<descriptions defaultDescription="CV_LOW_STOCK_MATERIALS"/>
+<localVariables/>
+<variableMappings/>
+<dataSources>
+  <DataSource id="CV_CURRENT_STOCK">
+    <resourceUri>CV_CURRENT_STOCK</resourceUri>
+  </DataSource>
+</dataSources>
+<snapshotProcedures/>
+<calculationViews>
+  <calculationView xsi:type="Calculation:ProjectionView" id="P_LOW_STOCK" filterExpressionLanguage="COLUMN_ENGINE">
+    <viewAttributes>
+      <viewAttribute id="PLANT_ID"/>
+      <viewAttribute id="PLANTCODE"/>
+      <viewAttribute id="PLANTNAME"/>
+      <viewAttribute id="LOCATION_ID"/>
+      <viewAttribute id="LOCATIONCODE"/>
+      <viewAttribute id="LOCATIONNAME"/>
+      <viewAttribute id="MATERIAL_ID"/>
+      <viewAttribute id="MATERIALCODE"/>
+      <viewAttribute id="MATERIALNAME"/>
+      <viewAttribute id="UNITOFMEASURE"/>
+      <viewAttribute id="CURRENT_STOCK"/>
+      <viewAttribute id="UNITPRICE"/>
+      <viewAttribute id="REORDERLEVEL"/>
+      <viewAttribute id="ACTIVE"/>
+      <viewAttribute id="STOCK_VALUE"/>
+    </viewAttributes>
+    <calculatedViewAttributes>
+      <calculatedViewAttribute id="SHORTAGE_QUANTITY" datatype="DECIMAL" length="15" scale="3" expressionLanguage="COLUMN_ENGINE">
+        <formula>&quot;REORDERLEVEL&quot; - &quot;CURRENT_STOCK&quot;</formula>
+      </calculatedViewAttribute>
+    </calculatedViewAttributes>
+    <input node="CV_CURRENT_STOCK"/>
+    <filter>&quot;CURRENT_STOCK&quot; &lt; &quot;REORDERLEVEL&quot;</filter>
+  </calculationView>
+</calculationViews>
+
+<logicalModel id="P_LOW_STOCK">
+  <attributes>
+    <attribute id="PLANT_ID" order="1" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="PLANT_ID"/>
+      <keyMapping columnObjectName="P_LOW_STOCK" columnName="PLANT_ID"/>
+    </attribute>
+    <attribute id="PLANTCODE" order="2" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="PLANTCODE"/>
+      <keyMapping columnObjectName="P_LOW_STOCK" columnName="PLANTCODE"/>
+    </attribute>
+    <attribute id="PLANTNAME" order="3" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="PLANTNAME"/>
+      <keyMapping columnObjectName="P_LOW_STOCK" columnName="PLANTNAME"/>
+    </attribute>
+    <attribute id="LOCATION_ID" order="4" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="LOCATION_ID"/>
+      <keyMapping columnObjectName="P_LOW_STOCK" columnName="LOCATION_ID"/>
+    </attribute>
+    <attribute id="LOCATIONCODE" order="5" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="LOCATIONCODE"/>
+      <keyMapping columnObjectName="P_LOW_STOCK" columnName="LOCATIONCODE"/>
+    </attribute>
+    <attribute id="LOCATIONNAME" order="6" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="LOCATIONNAME"/>
+      <keyMapping columnObjectName="P_LOW_STOCK" columnName="LOCATIONNAME"/>
+    </attribute>
+    <attribute id="MATERIAL_ID" order="7" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="MATERIAL_ID"/>
+      <keyMapping columnObjectName="P_LOW_STOCK" columnName="MATERIAL_ID"/>
+    </attribute>
+    <attribute id="MATERIALCODE" order="8" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="MATERIALCODE"/>
+      <keyMapping columnObjectName="P_LOW_STOCK" columnName="MATERIALCODE"/>
+    </attribute>
+    <attribute id="MATERIALNAME" order="9" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="MATERIALNAME"/>
+      <keyMapping columnObjectName="P_LOW_STOCK" columnName="MATERIALNAME"/>
+    </attribute>
+    <attribute id="UNITOFMEASURE" order="10" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="UNITOFMEASURE"/>
+      <keyMapping columnObjectName="P_LOW_STOCK" columnName="UNITOFMEASURE"/>
+    </attribute>
+  </attributes>
+  <calculatedAttributes/>
+  <baseMeasures>
+    <measure id="CURRENT_STOCK" order="11" aggregationType="sum" measureType="simple">
+      <descriptions defaultDescription="SIGNED_QUANTITY"/>
+      <measureMapping columnObjectName="P_LOW_STOCK" columnName="CURRENT_STOCK"/>
+      <exceptionAggregationMetadata/>
+    </measure>
+    <measure id="REORDERLEVEL" order="12" aggregationType="max" measureType="simple">
+      <descriptions defaultDescription="REORDERLEVEL"/>
+      <measureMapping columnObjectName="P_LOW_STOCK" columnName="REORDERLEVEL"/>
+      <exceptionAggregationMetadata/>
+    </measure>
+    <measure id="UNITPRICE" order="13" aggregationType="max" measureType="simple">
+      <descriptions defaultDescription="UNITPRICE"/>
+      <measureMapping columnObjectName="P_LOW_STOCK" columnName="UNITPRICE"/>
+      <exceptionAggregationMetadata/>
+    </measure>
+    <measure id="SHORTAGE_QUANTITY" order="14" aggregationType="sum" measureType="simple">
+      <descriptions defaultDescription="SHORTAGE_QUANTITY"/>
+      <measureMapping columnObjectName="P_LOW_STOCK" columnName="SHORTAGE_QUANTITY"/>
+      <exceptionAggregationMetadata/>
+    </measure>
+    <measure id="STOCK_VALUE" order="15" aggregationType="sum" measureType="simple">
+      <descriptions defaultDescription="STOCK_VALUE"/>
+      <measureMapping columnObjectName="P_LOW_STOCK" columnName="STOCK_VALUE"/>
+      <exceptionAggregationMetadata/>
+    </measure>
+  </baseMeasures>
+  <calculatedMeasures/>
+  <restrictedMeasures/>
+  <localDimensions/>
+</logicalModel>
+<layout>
+  <shapes>
+    <shape expanded="true" modelObjectName="Output" modelObjectNameSpace="MeasureGroup">
+      <upperLeftCorner x="40" y="85"/>
+    </shape>
+    
+  
+    <shape expanded="true" modelObjectName="P_LOW_STOCK" modelObjectNameSpace="CalculationView">
+      <upperLeftCorner x="100" y="191"/>
+      <rectangleSize height="30" width="160"/>
+    </shape>
+  </shapes>
+</layout>
+</Calculation:scenario>

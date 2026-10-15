@@ -1,0 +1,275 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Calculation:scenario xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:Calculation="http://www.sap.com/ndb/BiModelCalculation.ecore" id="CV_SLOW_MOVING_MATERIALS" applyPrivilegeType="NONE" dataCategory="CUBE" schemaVersion="3.0" hierarchyGeneration="SQL" outputViewType="Aggregation" cacheInvalidationPeriod="NONE" enforceSqlExecution="true" application="BAS">
+<descriptions defaultDescription="CV_SLOW_MOVING_MATERIALS"/>
+<localVariables>
+  <variable id="IP_DAYS" parameter="true">
+    <descriptions defaultDescription="Number of inactive days"/>
+    <variableProperties datatype="INTEGER" mandatory="false" defaultValue="30">
+      <valueDomain type="empty"/>
+      <selection multiLine="false" type="SingleValue"/>
+    </variableProperties>
+  </variable>
+</localVariables>
+<variableMappings/>
+<dataSources>
+  <DataSource id="WAREHOUSE_INVENTORY_STOCKMOVEMENTS">
+    <resourceUri>WAREHOUSE_INVENTORY_STOCKMOVEMENTS</resourceUri>
+  </DataSource>
+  <DataSource id="CV_CURRENT_STOCK">
+    <resourceUri>CV_CURRENT_STOCK</resourceUri>
+  </DataSource>
+</dataSources>
+<snapshotProcedures/>
+<calculationViews>
+  <calculationView xsi:type="Calculation:ProjectionView" id="P_GOODS_ISSUE" filterExpressionLanguage="COLUMN_ENGINE">
+    <viewAttributes>
+      <viewAttribute id="MATERIAL_ID"/>
+      <viewAttribute id="LOCATION_ID"/>
+      <viewAttribute id="ISSUE_DATE"/>
+      <viewAttribute id="MOVEMENTTYPE"/>
+    </viewAttributes>
+    <calculatedViewAttributes/>
+    <input node="WAREHOUSE_INVENTORY_STOCKMOVEMENTS">
+      <mapping xsi:type="Calculation:AttributeMapping" target="LOCATION_ID" source="STORAGELOCATION_ID"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="ISSUE_DATE" source="MOVEMENTDATE"/>
+    </input>
+    <filter>&quot;MOVEMENTTYPE&quot; = 'ISSUE'</filter>
+  </calculationView>
+  <calculationView xsi:type="Calculation:AggregationView" id="AGG_LAST_ISSUE">
+    <viewAttributes>
+      <viewAttribute id="MATERIAL_ID"/>
+      <viewAttribute id="LOCATION_ID"/>
+      <viewAttribute id="LAST_ISSUE_DATE" aggregationType="max"/>
+    </viewAttributes>
+    <calculatedViewAttributes/>
+    <restrictedViewAttributes/>
+    <input node="P_GOODS_ISSUE">
+      <mapping xsi:type="Calculation:AttributeMapping" target="LAST_ISSUE_DATE" source="ISSUE_DATE"/>
+    </input>
+  </calculationView>
+  <calculationView xsi:type="Calculation:JoinView" id="JOIN_STOCK_ISSUE" cardinality="CN_1" joinType="leftOuter">
+    <viewAttributes>
+      <viewAttribute id="PLANT_ID"/>
+      <viewAttribute id="PLANTCODE"/>
+      <viewAttribute id="PLANTNAME"/>
+      <viewAttribute id="LOCATIONCODE"/>
+      <viewAttribute id="LOCATIONNAME"/>
+      <viewAttribute id="MATERIALCODE"/>
+      <viewAttribute id="MATERIALNAME"/>
+      <viewAttribute id="UNITOFMEASURE"/>
+      <viewAttribute id="CURRENT_STOCK" aggregationType="sum"/>
+      <viewAttribute id="UNITPRICE" aggregationType="max"/>
+      <viewAttribute id="REORDERLEVEL" aggregationType="max"/>
+      <viewAttribute id="ACTIVE"/>
+      <viewAttribute id="STOCK_VALUE" aggregationType="sum"/>
+      <viewAttribute id="LAST_ISSUE_DATE" aggregationType="max"/>
+      <viewAttribute id="MATERIAL_ID"/>
+      <viewAttribute id="LOCATION_ID"/>
+      <viewAttribute hidden="true" id="JOIN$MATERIAL_ID$MATERIAL_ID"/>
+      <viewAttribute hidden="true" id="JOIN$LOCATION_ID$LOCATION_ID"/>
+    </viewAttributes>
+    <calculatedViewAttributes/>
+    <input node="CV_CURRENT_STOCK">
+      <mapping xsi:type="Calculation:AttributeMapping" target="PLANT_ID" source="PLANT_ID"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="PLANTCODE" source="PLANTCODE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="PLANTNAME" source="PLANTNAME"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="LOCATIONCODE" source="LOCATIONCODE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="LOCATIONNAME" source="LOCATIONNAME"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="MATERIALCODE" source="MATERIALCODE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="MATERIALNAME" source="MATERIALNAME"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="UNITOFMEASURE" source="UNITOFMEASURE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="CURRENT_STOCK" source="CURRENT_STOCK"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="UNITPRICE" source="UNITPRICE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="REORDERLEVEL" source="REORDERLEVEL"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="ACTIVE" source="ACTIVE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="STOCK_VALUE" source="STOCK_VALUE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="MATERIAL_ID" source="MATERIAL_ID"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="LOCATION_ID" source="LOCATION_ID"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="JOIN$MATERIAL_ID$MATERIAL_ID" source="MATERIAL_ID"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="JOIN$LOCATION_ID$LOCATION_ID" source="LOCATION_ID"/>
+    </input>
+    <input node="AGG_LAST_ISSUE">
+      <mapping xsi:type="Calculation:AttributeMapping" target="LAST_ISSUE_DATE" source="LAST_ISSUE_DATE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="JOIN$MATERIAL_ID$MATERIAL_ID" source="MATERIAL_ID"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="JOIN$LOCATION_ID$LOCATION_ID" source="LOCATION_ID"/>
+    </input>
+    <joinAttribute name="JOIN$MATERIAL_ID$MATERIAL_ID"/>
+    <joinAttribute name="JOIN$LOCATION_ID$LOCATION_ID"/>
+  </calculationView>
+  <calculationView xsi:type="Calculation:ProjectionView" id="P_SLOW_MOVING">
+    <viewAttributes>
+      <viewAttribute id="MATERIAL_ID"/>
+      <viewAttribute id="LOCATION_ID"/>
+      <viewAttribute id="CURRENT_STOCK"/>
+      <viewAttribute id="LAST_ISSUE_DATE"/>
+      <viewAttribute id="PLANT_ID"/>
+      <viewAttribute id="PLANTCODE"/>
+      <viewAttribute id="PLANTNAME"/>
+      <viewAttribute id="LOCATIONCODE"/>
+      <viewAttribute id="LOCATIONNAME"/>
+      <viewAttribute id="MATERIALCODE"/>
+      <viewAttribute id="MATERIALNAME"/>
+      <viewAttribute id="UNITOFMEASURE"/>
+      <viewAttribute id="UNITPRICE"/>
+      <viewAttribute id="STOCK_VALUE"/>
+    </viewAttributes>
+    <calculatedViewAttributes>
+      <calculatedViewAttribute id="DAYS_SINCE_LAST_ISSUE" datatype="INTEGER" expressionLanguage="SQL">
+        <formula>CASE
+    WHEN &quot;LAST_ISSUE_DATE&quot; IS NULL THEN 99999
+    ELSE DAYS_BETWEEN(&quot;LAST_ISSUE_DATE&quot;, CURRENT_DATE)
+END</formula>
+      </calculatedViewAttribute>
+      <calculatedViewAttribute id="MOVEMENT_STATUS" datatype="NVARCHAR" length="30" expressionLanguage="SQL">
+        <formula>CASE
+    WHEN &quot;LAST_ISSUE_DATE&quot; IS NULL THEN 'Never Issued'
+    ELSE 'Previously Issued'
+END</formula>
+      </calculatedViewAttribute>
+    </calculatedViewAttributes>
+    <input node="JOIN_STOCK_ISSUE"/>
+  </calculationView>
+  <calculationView xsi:type="Calculation:ProjectionView" id="P_FILTER_SLOW_MOVING" filterExpressionLanguage="SQL">
+    <viewAttributes>
+      <viewAttribute id="MATERIAL_ID"/>
+      <viewAttribute id="LOCATION_ID"/>
+      <viewAttribute id="CURRENT_STOCK"/>
+      <viewAttribute id="LAST_ISSUE_DATE"/>
+      <viewAttribute id="DAYS_SINCE_LAST_ISSUE"/>
+      <viewAttribute id="MOVEMENT_STATUS"/>
+      <viewAttribute id="PLANT_ID"/>
+      <viewAttribute id="PLANTCODE"/>
+      <viewAttribute id="PLANTNAME"/>
+      <viewAttribute id="LOCATIONCODE"/>
+      <viewAttribute id="LOCATIONNAME"/>
+      <viewAttribute id="MATERIALCODE"/>
+      <viewAttribute id="MATERIALNAME"/>
+      <viewAttribute id="UNITOFMEASURE"/>
+      <viewAttribute id="UNITPRICE"/>
+      <viewAttribute id="STOCK_VALUE"/>
+    </viewAttributes>
+    <calculatedViewAttributes/>
+    <input node="P_SLOW_MOVING"/>
+    <filter>&quot;CURRENT_STOCK&quot; &gt; 0
+AND &quot;DAYS_SINCE_LAST_ISSUE&quot; &gt;= $$IP_DAYS$$</filter>
+  </calculationView>
+</calculationViews>
+
+<logicalModel id="P_FILTER_SLOW_MOVING">
+  <attributes>
+    <attribute id="PLANT_ID" order="1" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="PLANT_ID"/>
+      <keyMapping columnObjectName="P_FILTER_SLOW_MOVING" columnName="PLANT_ID"/>
+    </attribute>
+    <attribute id="PLANTCODE" order="2" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="PLANTCODE"/>
+      <keyMapping columnObjectName="P_FILTER_SLOW_MOVING" columnName="PLANTCODE"/>
+    </attribute>
+    <attribute id="PLANTNAME" order="3" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="PLANTNAME"/>
+      <keyMapping columnObjectName="P_FILTER_SLOW_MOVING" columnName="PLANTNAME"/>
+    </attribute>
+    <attribute id="LOCATION_ID" order="4" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="LOCATION_ID"/>
+      <keyMapping columnObjectName="P_FILTER_SLOW_MOVING" columnName="LOCATION_ID"/>
+    </attribute>
+    <attribute id="LOCATIONCODE" order="5" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="LOCATIONCODE"/>
+      <keyMapping columnObjectName="P_FILTER_SLOW_MOVING" columnName="LOCATIONCODE"/>
+    </attribute>
+    <attribute id="LOCATIONNAME" order="6" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="LOCATIONNAME"/>
+      <keyMapping columnObjectName="P_FILTER_SLOW_MOVING" columnName="LOCATIONNAME"/>
+    </attribute>
+    <attribute id="MATERIAL_ID" order="7" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="MATERIAL_ID"/>
+      <keyMapping columnObjectName="P_FILTER_SLOW_MOVING" columnName="MATERIAL_ID"/>
+    </attribute>
+    <attribute id="MATERIALCODE" order="8" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="MATERIALCODE"/>
+      <keyMapping columnObjectName="P_FILTER_SLOW_MOVING" columnName="MATERIALCODE"/>
+    </attribute>
+    <attribute id="MATERIALNAME" order="9" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="MATERIALNAME"/>
+      <keyMapping columnObjectName="P_FILTER_SLOW_MOVING" columnName="MATERIALNAME"/>
+    </attribute>
+    <attribute id="UNITOFMEASURE" order="10" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="UNITOFMEASURE"/>
+      <keyMapping columnObjectName="P_FILTER_SLOW_MOVING" columnName="UNITOFMEASURE"/>
+    </attribute>
+    <attribute id="LAST_ISSUE_DATE" order="11" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="MOVEMENTDATE"/>
+      <keyMapping columnObjectName="P_FILTER_SLOW_MOVING" columnName="LAST_ISSUE_DATE"/>
+    </attribute>
+    <attribute id="MOVEMENT_STATUS" order="12" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="MOVEMENT_STATUS"/>
+      <keyMapping columnObjectName="P_FILTER_SLOW_MOVING" columnName="MOVEMENT_STATUS"/>
+    </attribute>
+  </attributes>
+  <calculatedAttributes/>
+  <baseMeasures>
+    <measure id="CURRENT_STOCK" order="13" aggregationType="sum" measureType="simple">
+      <descriptions defaultDescription="SIGNED_QUANTITY"/>
+      <measureMapping columnObjectName="P_FILTER_SLOW_MOVING" columnName="CURRENT_STOCK"/>
+      <exceptionAggregationMetadata/>
+    </measure>
+    <measure id="UNITPRICE" order="14" aggregationType="max" measureType="simple">
+      <descriptions defaultDescription="UNITPRICE"/>
+      <measureMapping columnObjectName="P_FILTER_SLOW_MOVING" columnName="UNITPRICE"/>
+      <exceptionAggregationMetadata/>
+    </measure>
+    <measure id="STOCK_VALUE" order="15" aggregationType="sum" measureType="simple">
+      <descriptions defaultDescription="STOCK_VALUE"/>
+      <measureMapping columnObjectName="P_FILTER_SLOW_MOVING" columnName="STOCK_VALUE"/>
+      <exceptionAggregationMetadata/>
+    </measure>
+    <measure id="DAYS_SINCE_LAST_ISSUE" order="16" aggregationType="max" measureType="simple">
+      <descriptions defaultDescription="DAYS_SINCE_LAST_ISSUE"/>
+      <measureMapping columnObjectName="P_FILTER_SLOW_MOVING" columnName="DAYS_SINCE_LAST_ISSUE"/>
+      <exceptionAggregationMetadata/>
+    </measure>
+  </baseMeasures>
+  <calculatedMeasures/>
+  <restrictedMeasures/>
+  <localDimensions/>
+</logicalModel>
+<layout>
+  <shapes>
+    <shape expanded="true" modelObjectName="Output" modelObjectNameSpace="MeasureGroup">
+      <upperLeftCorner x="92" y="112"/>
+    
+      <rectangleSize width="160"/>
+    </shape>
+    
+  
+    <shape expanded="true" modelObjectName="P_GOODS_ISSUE" modelObjectNameSpace="CalculationView">
+      <upperLeftCorner x="92" y="692"/>
+      <rectangleSize height="30" width="160"/>
+    </shape>
+    <shape expanded="true" modelObjectName="AGG_LAST_ISSUE" modelObjectNameSpace="CalculationView">
+      <upperLeftCorner x="92" y="587"/>
+      <rectangleSize height="30" width="160"/>
+    </shape>
+    <shape expanded="true" modelObjectName="JOIN_STOCK_ISSUE" modelObjectNameSpace="CalculationView">
+      <upperLeftCorner x="92" y="447"/>
+      <rectangleSize height="30" width="160"/>
+    </shape>
+    <shape modelObjectName="CV_CURRENT_STOCK" modelObjectNameSpace="JOIN_STOCK_ISSUE" modelObjectType="JoinNodeInput">
+      <upperLeftCorner x="17" y="-18"/>
+      <rectangleSize width="203"/>
+    </shape>
+    <shape modelObjectName="AGG_LAST_ISSUE" modelObjectNameSpace="JOIN_STOCK_ISSUE" modelObjectType="JoinNodeInput">
+      <upperLeftCorner x="310" y="12"/>
+      <rectangleSize width="207"/>
+    </shape>
+    <shape expanded="true" modelObjectName="P_SLOW_MOVING" modelObjectNameSpace="CalculationView">
+      <upperLeftCorner x="92" y="342"/>
+      <rectangleSize height="30" width="160"/>
+    </shape>
+    <shape expanded="true" modelObjectName="P_FILTER_SLOW_MOVING" modelObjectNameSpace="CalculationView">
+      <upperLeftCorner x="92" y="217"/>
+      <rectangleSize height="30" width="160"/>
+    </shape>
+  </shapes>
+</layout>
+</Calculation:scenario>
