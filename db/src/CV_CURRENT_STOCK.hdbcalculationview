@@ -42,7 +42,9 @@ END</formula>
       </calculatedViewAttribute>
     
       <calculatedViewAttribute id="MOVEMENT_TYPE" datatype="NVARCHAR" length="20" expressionLanguage="SQL">
+    
         <formula>&quot;MOVEMENTTYPE&quot;</formula>
+    
       </calculatedViewAttribute>
     </calculatedViewAttributes>
     <input node="WAREHOUSE_INVENTORY_STOCKMOVEMENTS">
@@ -63,7 +65,9 @@ END</formula>
       </calculatedViewAttribute>
     
       <calculatedViewAttribute id="MOVEMENT_TYPE" datatype="NVARCHAR" length="20" expressionLanguage="SQL">
+    
         <formula>'TRANSFER_OUT'</formula>
+    
       </calculatedViewAttribute>
     </calculatedViewAttributes>
     <input node="P_TRANSFER_OUT$$$$WAREHOUSE_INVENTORY_STOCKMOVEMENTS$$">
@@ -84,7 +88,9 @@ END</formula>
       </calculatedViewAttribute>
     
       <calculatedViewAttribute id="MOVEMENT_TYPE" datatype="NVARCHAR" length="20" expressionLanguage="SQL">
+    
         <formula>'TRANSFER_IN'</formula>
+    
       </calculatedViewAttribute>
     </calculatedViewAttributes>
     <input node="P_TRANSFER_IN$$$$WAREHOUSE_INVENTORY_STOCKMOVEMENTS$$">
@@ -338,7 +344,9 @@ END</formula>
   
     <attribute id="MOVEMENT_TYPE" order="16" displayAttribute="false" attributeHierarchyActive="false">
       <descriptions defaultDescription="MOVEMENT_TYPE"/>
+  
       <keyMapping columnObjectName="P_STOCK_VALUE" columnName="MOVEMENT_TYPE"/>
+  
     </attribute>
   </attributes>
   <calculatedAttributes/>

@@ -10,7 +10,7 @@
 </dataSources>
 <snapshotProcedures/>
 <calculationViews>
-  <calculationView xsi:type="Calculation:ProjectionView" id="P_LOW_STOCK" filterExpressionLanguage="COLUMN_ENGINE">
+  <calculationView xsi:type="Calculation:ProjectionView" id="P_LOW_STOCK">
     <viewAttributes>
       <viewAttribute id="PLANT_ID"/>
       <viewAttribute id="PLANTCODE"/>
@@ -23,9 +23,8 @@
       <viewAttribute id="MATERIALNAME"/>
       <viewAttribute id="UNITOFMEASURE"/>
       <viewAttribute id="CURRENT_STOCK"/>
-      <viewAttribute id="UNITPRICE"/>
       <viewAttribute id="REORDERLEVEL"/>
-      <viewAttribute id="ACTIVE"/>
+      <viewAttribute id="UNITPRICE"/>
       <viewAttribute id="STOCK_VALUE"/>
     </viewAttributes>
     <calculatedViewAttributes>
@@ -34,7 +33,6 @@
       </calculatedViewAttribute>
     </calculatedViewAttributes>
     <input node="CV_CURRENT_STOCK"/>
-    <filter>&quot;CURRENT_STOCK&quot; &lt; &quot;REORDERLEVEL&quot;</filter>
   </calculationView>
 </calculationViews>
 
@@ -83,7 +81,7 @@
   </attributes>
   <calculatedAttributes/>
   <baseMeasures>
-    <measure id="CURRENT_STOCK" order="11" aggregationType="sum" measureType="simple">
+    <measure id="CURRENT_STOCK" order="11" aggregationType="max" measureType="simple">
       <descriptions defaultDescription="SIGNED_QUANTITY"/>
       <measureMapping columnObjectName="P_LOW_STOCK" columnName="CURRENT_STOCK"/>
       <exceptionAggregationMetadata/>
@@ -93,17 +91,17 @@
       <measureMapping columnObjectName="P_LOW_STOCK" columnName="REORDERLEVEL"/>
       <exceptionAggregationMetadata/>
     </measure>
-    <measure id="UNITPRICE" order="13" aggregationType="max" measureType="simple">
-      <descriptions defaultDescription="UNITPRICE"/>
-      <measureMapping columnObjectName="P_LOW_STOCK" columnName="UNITPRICE"/>
-      <exceptionAggregationMetadata/>
-    </measure>
-    <measure id="SHORTAGE_QUANTITY" order="14" aggregationType="sum" measureType="simple">
+    <measure id="SHORTAGE_QUANTITY" order="13" aggregationType="max" measureType="simple">
       <descriptions defaultDescription="SHORTAGE_QUANTITY"/>
       <measureMapping columnObjectName="P_LOW_STOCK" columnName="SHORTAGE_QUANTITY"/>
       <exceptionAggregationMetadata/>
     </measure>
-    <measure id="STOCK_VALUE" order="15" aggregationType="sum" measureType="simple">
+    <measure id="UNITPRICE" order="14" aggregationType="max" measureType="simple">
+      <descriptions defaultDescription="UNITPRICE"/>
+      <measureMapping columnObjectName="P_LOW_STOCK" columnName="UNITPRICE"/>
+      <exceptionAggregationMetadata/>
+    </measure>
+    <measure id="STOCK_VALUE" order="15" aggregationType="max" measureType="simple">
       <descriptions defaultDescription="STOCK_VALUE"/>
       <measureMapping columnObjectName="P_LOW_STOCK" columnName="STOCK_VALUE"/>
       <exceptionAggregationMetadata/>
